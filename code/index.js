@@ -16,10 +16,11 @@ async function req(url) {
   return await data.json();
 } //в результате получаем Promise
 
+
 data
   .then((info) => {
-    info.map((product) => {
-      console.log(product);
+    info.map((item) => {
+      console.log(item);
     });
   })
   .catch((e) => {
@@ -29,28 +30,52 @@ data
 //api nova poshta
 
 const apiKey = "43bd842411af97c9174700033d27b00e"; //для нової пошти
-const headers = new Headers({
-  "Content-Type": "application/json",
-  Authorization: apiKey,
+async function req_np({
+  url,
+  apiKey,
+  modelName,
+  calledMethod,
+  methodProperties,
+}) {
+  const data = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+    },
+    method: "POST",
+    body: JSON.stringify({
+      modelName,
+      calledMethod,
+      methodProperties,
+      apiKey,
+    }),
+  });
+  return await data.json();
+}
+
+const data_np = req_np({
+  url: "https://api.novaposhta.ua/v2.0/json/",
+  apiKey: "",
+  modelName: "Address",
+  calledMethod: "getWarehouses",
+  methodProperties: {},
 });
 
-fetch("https://api.novaposhta.ua/v2.0/json/", { headers })
-  .then((response) => response.json())
-  .then((data) => console.log(data))
+data_np
+  .then((info) => console.log(info))
   .catch((error) => console.error(error));
 
-
 //weather api
-const apiKey_weather = "5e558f0e7abf23b620280db81851fd8d";
-const data_weather = req_weather(
-  `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey_weather}&units=metric`
-);
 async function req_weather(url) {
   const data = await fetch(url);
   return await data.json();
 } //в результате получаем Promise
 
-const final_data = data_weather
+const apiKey_weather = "5e558f0e7abf23b620280db81851fd8d";
+const data_weather = req_weather(
+  `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey_weather}&units=metric`
+);
+
+data_weather
   .then((info) => {
     console.log(info);
   })
