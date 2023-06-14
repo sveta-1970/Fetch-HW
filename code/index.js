@@ -29,7 +29,6 @@ data
 
 //api nova poshta
 
-const apiKey = "43bd842411af97c9174700033d27b00e"; //для нової пошти
 async function req_np({
   url,
   apiKey,
