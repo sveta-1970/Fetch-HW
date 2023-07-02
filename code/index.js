@@ -16,18 +16,69 @@ async function req(url) {
   return await data.json();
 } //в результате получаем Promise
 
-
 data
   .then((info) => {
     info.map((item) => {
       console.log(item);
+      showCurrency(item);
     });
   })
   .catch((e) => {
     console.error(e);
   });
 
+function showCurrency(data = []) {
+  if (!Array.isArray(data)) return;
+
+  const tbody = document.querySelector("tbody");
+
+  data.forEach((obj, i) => {
+    const pattern = `
+         <tr>
+         <td>${i + 1}</td>
+         <td>${obj.currencyCodeA}</td>
+         <td>${obj.rateCross}</td>
+         </tr>
+         `;
+    tbody.insertAdjacentHTML("beforeend", pattern);
+  });
+}
+
+//weather api
+async function req_weather(url) {
+  const data = await fetch(url);
+  return await data.json();
+} //в результате получаем Promise
+
+const apiKey_weather = "5e558f0e7abf23b620280db81851fd8d";
+const data_weather = req_weather(
+  `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey_weather}&units=metric`
+);
+
+data_weather
+  .then((info) => {
+    console.log(info);
+    showWeather(info);
+  })
+  .catch((e) => {
+    console.error(e);
+  });
+
+function showWeather(obj) {
+  const weather = document.getElementById("weather");
+  const pattern = `
+  <div class="city">${obj.name}</div>
+  <div class="temperature">${Math.round(obj.main.temp)} °C</div>
+  <div class="description">${obj.weather[0].description}</div>
+  `;
+
+  weather.insertAdjacentHTML("beforeend", pattern);
+}
+
 //api nova poshta
+
+const input = document.querySelector("#search");
+const button = document.querySelector("#search_button");
 
 async function req_np({
   url,
@@ -59,25 +110,27 @@ const data_np = req_np({
   methodProperties: {},
 });
 
-data_np
-  .then((info) => console.log(info))
-  .catch((error) => console.error(error));
+button.addEventListener("click", handleFilter);
 
-//weather api
-async function req_weather(url) {
-  const data = await fetch(url);
-  return await data.json();
-} //в результате получаем Promise
+function handleFilter(e) {
+  e.preventDefault();
+  data_np
+    .then((info) => {
+      const result = info.data;
+      showWarehouses(info.data);
+    })
+    .catch((error) => console.error(error));
+}
 
-const apiKey_weather = "5e558f0e7abf23b620280db81851fd8d";
-const data_weather = req_weather(
-  `https://api.openweathermap.org/data/2.5/weather?q=London&appid=${apiKey_weather}&units=metric`
-);
-
-data_weather
-  .then((info) => {
-    console.log(info);
-  })
-  .catch((e) => {
-    console.error(e);
+function showWarehouses(data = []) {
+  if (!Array.isArray(data)) return;
+  const warehouses = document.querySelector("warehouses");
+  data.map((item) => {
+    const search_city = input.value;
+    if (search_city === item.SettlementDescription) {
+      console.log(item); //обєкт, в якому є місто пошуку
+      const pattern = `<div>${item.ShortAddress}</div>`;
+      warehouses.insertAdjacentHTML("beforeend", pattern);
+    }
   });
+}
