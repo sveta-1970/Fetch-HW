@@ -18,10 +18,7 @@ async function req(url) {
 
 data
   .then((info) => {
-    info.map((item) => {
-      console.log(item);
-      showCurrency(item);
-    });
+    showCurrency(info);
   })
   .catch((e) => {
     console.error(e);
@@ -29,7 +26,6 @@ data
 
 function showCurrency(data = []) {
   if (!Array.isArray(data)) return;
-
   const tbody = document.querySelector("tbody");
 
   data.forEach((obj, i) => {
@@ -37,7 +33,7 @@ function showCurrency(data = []) {
          <tr>
          <td>${i + 1}</td>
          <td>${obj.currencyCodeA}</td>
-         <td>${obj.rateCross}</td>
+         <td>${obj.rateCross.toFixed(2)}</td>
          </tr>
          `;
     tbody.insertAdjacentHTML("beforeend", pattern);
@@ -116,7 +112,6 @@ function handleFilter(e) {
   e.preventDefault();
   data_np
     .then((info) => {
-      const result = info.data;
       showWarehouses(info.data);
     })
     .catch((error) => console.error(error));
@@ -124,12 +119,13 @@ function handleFilter(e) {
 
 function showWarehouses(data = []) {
   if (!Array.isArray(data)) return;
-  const warehouses = document.querySelector("warehouses");
+  const warehouses = document.querySelector("#warehouses");
+
   data.map((item) => {
     const search_city = input.value;
-    if (search_city === item.SettlementDescription) {
-      console.log(item); //обєкт, в якому є місто пошуку
-      const pattern = `<div>${item.ShortAddress}</div>`;
+    if (item.SettlementDescription === search_city) {
+      console.log(item.ShortAddress); //адреса
+      const pattern = `<li>${item.ShortAddress}</li>`;
       warehouses.insertAdjacentHTML("beforeend", pattern);
     }
   });
