@@ -120,7 +120,7 @@ function handleFilter(e) {
 function showWarehouses(data = []) {
   if (!Array.isArray(data)) return;
   const warehouses = document.querySelector("#warehouses");
-
+  warehouses.innerHTML = "";
   data.map((item) => {
     const search_city = input.value;
     if (item.SettlementDescription === search_city) {
